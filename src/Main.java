@@ -44,6 +44,7 @@ public class Main {
                 {'2', '1', '3'}
         };
 //        System.out.println(startState == goalState);
+//        TEsT
 
 
         // TODO: move to uniformCostSearch :) ..... ;(
