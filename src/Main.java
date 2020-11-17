@@ -21,8 +21,27 @@ public class Main {
 //        System.out.println("Please enter path to input file: ");
 //        String line = userInput.nextLine();
 //        System.out.println("you entered " + line);
+/*
+        1-numCorrect numbers
+        1 - 3/9 = 2/3
 
+        1 - (0/9 * posvalue)= 1
+        posvalue :
+            1 = middle
+            2 = side
+            4 = corner
 
+        1 - (1/9 * 1) = 8/9 = 0.888  = 88  /100
+        1 - (1/9 * 1.25)    = 0.8611 = 86  /100
+        1 - (1/9 * 1.5)     = 0.8333 = 83  /100
+
+        1 - (1/9 * 2)    = 0.7777 = 77  /100
+        1 - (1/9 * 4)    = 0.5555 = 55  /100
+        1 - (2/9 * 2)    = 0.5555 = 55  /100
+
+        Cost ^^  / distance
+
+*/
         char[][] startState = {
                 {'8', '7', '6'},
                 {'5', '4', '3'},
@@ -50,6 +69,7 @@ public class Main {
 
         Node startNode = new Node(startState);
         Node goalNode = new Node(goalState);
+        State2D goal = new State2D(goalState);
 
 
 //        TreeSet<Node> unexpandedNodes = new TreeSet<>(); // TreeSet wil sort Nodes based on compareTo() in Node
@@ -68,19 +88,40 @@ public class Main {
 //            Node node = unexpandedNodes.first(); // since it's sorted, first item will be lowest cost from root
 //            expandedNodes.add(node);
 //            unexpandedNodes.re
+
+            Node node;
             // TODO: Sort by cost OR add to right position in list: add(i, element)
-            Node node = unexpandedNodes.get(0); // since it is sorted the first item will be lowest cost from root
-            unexpandedNodes.remove(0);
+            int aStarCheapestRoute = Integer.MAX_VALUE;
+            int aStarCheapestRouteIndex = 0;
+            for (int i = 0; i < unexpandedNodes.size(); i++) {
+//                Node a = unexpandedNodes.get(i);
+//                a.calcHeuristic(goal);
+                int cost = unexpandedNodes.get(i).getCombinedCost();
+                if(cost < aStarCheapestRoute){
+                    aStarCheapestRoute = cost;
+                    aStarCheapestRouteIndex = i;
+                }
+            }
+            node = unexpandedNodes.get(aStarCheapestRouteIndex);
+            unexpandedNodes.remove(aStarCheapestRouteIndex);
             expandedNodes.add(node);
-            if(Arrays.deepEquals(node.getState(), goalState3)){
+
+            if(Arrays.deepEquals(node.getState(), goalState)){
                 System.out.println("winner winner chicken dinner!");
                 return;
             }
+//            node.calcHeuristic(new State2D(goalState));
+//            int combinedCost = node.getHeuristic() + node.getCost();
+//            int newCost = node.getCombinedCost();
+//            if(node.getHeuristic() > 1.5){ // max is ~2.777
+//                System.out.println("close!");
+//            }
             node.expand();
             boolean previouslyExplored;
             boolean hasBeenAdded;
             for (Node a : node.getPossiblePaths()) {
                 previouslyExplored = false;
+                a.calcHeuristic(goal);
 
                 for (Node b : unexpandedNodes) {
                     if(Arrays.deepEquals(a.getState(), b.getState())){

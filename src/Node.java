@@ -7,6 +7,7 @@ public class Node implements Comparable {
     private Node parent;
     private int cost = 0;
     private int heuristic = 0;
+    private int combinedCost = 0;
     private ArrayList<Node> possiblePaths = new ArrayList<>();
     private boolean expanded = false;
 
@@ -24,6 +25,7 @@ public class Node implements Comparable {
     public Node getParent(){return parent;}
     public int getCost(){return cost;}
     public int getHeuristic(){return heuristic;}
+    public int getCombinedCost(){return combinedCost;}
     public ArrayList<Node> getPossiblePaths(){return possiblePaths;}
     public boolean isExpanded(){ return expanded; }
 
@@ -117,6 +119,70 @@ public class Node implements Comparable {
 
     // compare if two nodes have the same state
     public boolean equals(Node other){ return Arrays.deepEquals(state, other.getState()); }
+
+
+    /*
+        1-numCorrect numbers
+        1 - 3/9 = 2/3
+
+        1 - (0/9 * posvalue)= 1
+        posvalue :
+            1 = middle
+            2 = side
+            4 = corner
+
+        1 - (1/9 * 1) = 8/9 = 0.888  = 88  /100
+        1 - (1/9 * 1.25)    = 0.8611 = 86  /100
+        1 - (1/9 * 1.5)     = 0.8333 = 83  /100
+
+        1 - (1/9 * 2)    = 0.7777 = 77  /100
+        1 - (1/9 * 4)    = 0.5555 = 55  /100
+        1 - (2/9 * 2)    = 0.5555 = 55  /100
+
+        Cost ^^  / distance
+
+*/
+    public static final int CORNER = 4;
+    public static final int SIDE = 2;
+    public static final int MIDDLE = 1;
+    public static final double A_NINETH = (double) 1 / (double) 9;
+
+    // progress towards goalstate
+    private double calcScore(State2D goal){
+        double score = 0.0;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if(this.state[i][j] == goal.state[i][j]){
+                    if( // corner
+                        (i == 0 && (j == 0 || j == 2)) ||
+                        (i == 2 && (j == 0 || j == 2))
+                    ){
+                        score += A_NINETH * CORNER;
+                    }else if( // side
+                        (j == 1 && (i == 0 || i == 2)) ||
+                        (i == 1 && (j == 0 || j == 2))
+                    ){
+                        score += A_NINETH * SIDE;
+                    }else if( // middle
+                        (i == 1 && j == 1)
+                    ){
+                        score += A_NINETH * MIDDLE;
+                    }else{
+                        System.out.println("how did we get here?");
+                    }
+                }
+            }
+        }
+        return score;// max is ~2.777
+    }
+    public void calcHeuristic(State2D goal){
+        double score = calcScore(goal);// max is ~2.777
+        score /= 2.777;
+        score *= 100;
+//        this.heuristic = (int)(score / (double)this.cost);
+        this.heuristic = (int)(100 - score);
+        this.combinedCost = this.heuristic + this.cost;
+    }
 
 
     @Override

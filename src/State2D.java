@@ -1,14 +1,14 @@
-public class State implements Comparable {
+public class State2D implements Comparable {
 
-    private char[][] state;
+    public char[][] state;
 
-    State(char[][] state){
+    State2D(char[][] state){
         this.state = state;
     }
 
-    public char[][] get(){
-        return state;
-    }
+//    public char[][] get(){
+//        return state;
+//    }
 
     @Override
     public boolean equals(Object o){
